@@ -9,7 +9,11 @@ class Play extends Phaser.Scene {
         //Loads image and tile sprites
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('spaceship', './assets/spaceship.png');
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('restBG1', './assets/RestaurantBackground1.png');
+        this.load.image('restBG2', './assets/RestaurantBackground2.png');
+        this.load.image('pp1', './assets/ppl1.png');
+        this.load.image('pp2', './assets/ppl2.png');
+        this.load.image('pp3', './assets/ppl3.png');
         this.load.image('gibby', './assets/gibbah.png')
         this.load.image('joe', './assets/joe.png')
 
@@ -26,11 +30,21 @@ class Play extends Phaser.Scene {
     //Function thats called when the scene is loaded
     create(){        
         /////////////////////////////////////////////////////////////////////////////////////////////
+        //Background
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        this.bg1 = this.add.tileSprite(0, 0, 640, 900, 'restBG1').setOrigin(0,0);
+        this.peopleFar = this.add.tileSprite(0, 120, 640, 100, 'pp3').setOrigin(0,0);
+        this.peopleMed = this.add.tileSprite(0, 120, 640, 150, 'pp2').setOrigin(0,0);
+        this.peopleClose = this.add.tileSprite(0, 100, 640, 200, 'pp1').setOrigin(0,0);
+        this.bg2 = this.add.tileSprite(0, 0, 640, 900, 'restBG2').setOrigin(0,0);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Spaceships
         /////////////////////////////////////////////////////////////////////////////////////////////
         //add spaceships
         this.ship01 = new Spaceship(this, game.config.width + 192, 132,
-             'spaceship', 0, 30).setOrigin(0,0);
+            'spaceship', 0, 30).setOrigin(0,0);
         this.ship02 = new Spaceship(this, game.config.width + 96, 196,
             'spaceship', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, 260,
@@ -51,9 +65,9 @@ class Play extends Phaser.Scene {
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         //Creates player 1 rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, 431, `rocket`, keyLEFT, keyRIGHT, keyUP)
+        this.p1Rocket = new Rocket(this, game.config.width/2, 320, `rocket`, keyLEFT, keyRIGHT, keyUP)
         .setScale(0.5, 0.5).setOrigin(0.0);
-        this.p2Rocket = new Rocket(this, game.config.width/2, 431, `rocket`, keyA, keyD, keyW)
+        this.p2Rocket = new Rocket(this, game.config.width/2, 750, `rocket`, keyA, keyD, keyW)
         .setScale(0.5, 0.5).setOrigin(0.0);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +90,7 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
-        this.scoreLeft = this.add.text(69, 54, this.p1Score, scoreConfig);
+        this.scoreLeft = this.add.text(0, game.config.height / 2, this.p1Score, scoreConfig);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Animation
@@ -112,6 +126,14 @@ class Play extends Phaser.Scene {
 
     //Function that runs every frame
     update(){
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Player Movement
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        this.peopleFar.tilePositionX -= 2;
+        this.peopleMed.tilePositionX += 5;
+        this.peopleClose.tilePositionX -= 10;
+
+
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Game Over Stuff
         /////////////////////////////////////////////////////////////////////////////////////////////
