@@ -24,22 +24,10 @@ class Play extends Phaser.Scene {
     }
 
     //Function thats called when the scene is loaded
-    create(){
-        //places a tile sprite
-        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0,0);
-    
-        //Creates a white rectangle border
-        this.add.rectangle(5,5, 630, 32, 0xFFFFFF).setOrigin(0,0);
-        this.add.rectangle(5,443, 630, 32, 0xFFFFFF).setOrigin(0,0);
-        this.add.rectangle(5,5, 32, 455, 0xFFFFFF).setOrigin(0,0);
-        this.add.rectangle(603,5, 32, 455, 0xFFFFFF).setOrigin(0,0);
-        //Creates a green UI background
-        this.add.rectangle(37, 42, 566, 64, 0x00FF00).setOrigin(0,0);
-        
-        //Creates a rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, 431, `rocket`)
-        .setScale(0.5, 0.5).setOrigin(0.0);
-
+    create(){        
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Spaceships
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //add spaceships
         this.ship01 = new Spaceship(this, game.config.width + 192, 132,
              'spaceship', 0, 30).setOrigin(0,0);
@@ -47,11 +35,30 @@ class Play extends Phaser.Scene {
             'spaceship', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, 260,
             'spaceship', 0, 10).setOrigin(0,0);
+       
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Player Movement
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Definds the keyboard keys
-        keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+        //P1 controls
+        keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
+        //P2 Controls
+        keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+        //Creates player 1 rocket
+        this.p1Rocket = new Rocket(this, game.config.width/2, 431, `rocket`, keyLEFT, keyRIGHT, keyUP)
+        .setScale(0.5, 0.5).setOrigin(0.0);
+        this.p2Rocket = new Rocket(this, game.config.width/2, 431, `rocket`, keyA, keyD, keyW)
+        .setScale(0.5, 0.5).setOrigin(0.0);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //SCORE
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Holds the score
         this.p1Score = 0;
 
@@ -71,6 +78,9 @@ class Play extends Phaser.Scene {
 
         this.scoreLeft = this.add.text(69, 54, this.p1Score, scoreConfig);
 
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Animation
+        /////////////////////////////////////////////////////////////////////////////////////////////
 
         //Creates the explode animation
         this.anims.create({
@@ -80,9 +90,16 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Game Over Stuff
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Game over flag
         this.gameOver = false;
 
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Timers
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Creates a clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(60000, () => {
@@ -95,12 +112,11 @@ class Play extends Phaser.Scene {
 
     //Function that runs every frame
     update(){
-        //scrolls the starfield
-        this.starfield.tilePositionX -= 4;
-    //    this.starfield.tilePositionY -= 4;
-
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Game Over Stuff
+        /////////////////////////////////////////////////////////////////////////////////////////////
         //Checks input for resetart
-        if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyF)){
+        if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyUP)){
             this.scene.restart(this.p1Score);
         }
         //Checks input for menu
@@ -111,6 +127,7 @@ class Play extends Phaser.Scene {
         if(!this.gameOver){
             //Update Rocket
             this.p1Rocket.update();
+            this.p2Rocket.update();
 
             //Updates spaceships
             this.ship01.update();
@@ -118,7 +135,10 @@ class Play extends Phaser.Scene {
             this.ship03.update();
         }
 
-        //Ship Collisions
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //Collisions
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //P1 Ship Collisions
         if(this.checkCollision(this.p1Rocket, this.ship03)){
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
@@ -131,6 +151,23 @@ class Play extends Phaser.Scene {
         }
         if(this.checkCollision(this.p1Rocket, this.ship01)){
             this.p1Rocket.reset();
+            this.shipExplode(this.ship01);
+            console.log("Kaboom! Ship 1!");
+        }
+
+        //P2 Ship Collisions
+        if(this.checkCollision(this.p2Rocket, this.ship03)){
+            this.p2Rocket.reset();
+            this.shipExplode(this.ship03);
+            console.log("Kaboom! Ship 3!");
+        }
+        if(this.checkCollision(this.p2Rocket, this.ship02)){
+            this.p2Rocket.reset();
+            this.shipExplode(this.ship02);
+            console.log("Kaboom! Ship 2!");
+        }
+        if(this.checkCollision(this.p2Rocket, this.ship01)){
+            this.p2Rocket.reset();
             this.shipExplode(this.ship01);
             console.log("Kaboom! Ship 1!");
         }

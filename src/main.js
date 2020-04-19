@@ -1,7 +1,7 @@
 let config = {
     type: Phaser.CANVAS,
     width: 640,
-    height: 480,
+    height: 800,
     scene: [ Menu, Play],
 }
 
@@ -13,4 +13,4 @@ game.settings = {
 }
 
 //Reserves keyboard vars
-let keyF, keyLEFT, keyRIGHT;
+let keyUP, keyLEFT, keyRIGHT, keyA, keyD, keyW;
