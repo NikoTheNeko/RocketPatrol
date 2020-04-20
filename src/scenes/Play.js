@@ -34,7 +34,7 @@ class Play extends Phaser.Scene {
         this.load.audio('bell', './assets/bell.wav');
         this.load.audio('scribble', './assets/scribble.wav');
         this.load.audio('sizzle', './assets/sizzle.wav');
-
+        this.load.audio('gibby', './assets/gibby.mp3')
 
     }
 
@@ -75,17 +75,21 @@ class Play extends Phaser.Scene {
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        gibbyButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
 
         //P2 Controls
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-        //Creates player 1 rocket
+        //Creates player rockets
         this.p1Rocket = new Rocket(this, game.config.width/2, 320, `pen`, keyLEFT, keyRIGHT, keyUP)
         .setScale(0.5, 0.5).setOrigin(0.0);
         this.p2Rocket = new Rocket(this, game.config.width/2, 750, `bacon`, keyA, keyD, keyW)
         .setScale(0.5, 0.5).setOrigin(0.0);
+
+        //Creates gibby
+        this.gibbay = this.add.sprite(320, -300, 'gibby');
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         //SCORE
@@ -231,6 +235,21 @@ class Play extends Phaser.Scene {
 
         //Score stuff
         this.calcTotal();
+
+        //Gibby
+        if(Phaser.Input.Keyboard.JustDown(gibbyButton) && !gibbyFire){
+            this.sound.play('gibby');
+            gibbyFire = true;
+        }
+
+        if(gibbyFire)
+            this.gibbay.y += 13;
+
+        if(this.gibbay.y > 1000){
+            gibbyFire = false;
+            this.gibbay.y = -300;
+        }
+
 
     }
 
