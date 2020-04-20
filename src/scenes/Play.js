@@ -7,24 +7,35 @@ class Play extends Phaser.Scene {
     //Function that loads the sprites when the scene is loaded
     preload(){
         //Loads image and tile sprites
-        this.load.image('rocket', './assets/rocket.png');
-        this.load.image('spaceship', './assets/spaceship.png');
+        //this.load.image('rocket', './assets/rocket.png');
+        //this.load.image('spaceship', './assets/spaceship.png');
         this.load.image('restBG1', './assets/RestaurantBackground1.png');
         this.load.image('restBG2', './assets/RestaurantBackground2.png');
         this.load.image('pp1', './assets/ppl1.png');
         this.load.image('pp2', './assets/ppl2.png');
         this.load.image('pp3', './assets/ppl3.png');
-        this.load.image('gibby', './assets/gibbah.png')
-        this.load.image('joe', './assets/joe.png')
+        this.load.image('rec1', './assets/reciept1.png');
+        this.load.image('rec2', './assets/reciept2.png');
+        this.load.image('rec3', './assets/reciept3.png');
+        this.load.image('pan1', './assets/pan1.png');
+        this.load.image('pan2', './assets/pan2.png');
+        this.load.image('pan3', './assets/pan3.png');
+        this.load.image('bacon', './assets/bacon.png');
+        this.load.image('pen', './assets/pen.png');
+        this.load.image('gibby', './assets/gibbah.png');
+        this.load.image('joe', './assets/joe.png');
 
         //Loads animations
-        this.load.spritesheet('explosion', './assets/explosion.png', 
-        {frameWidth: 64, frameHeight:32, startFrame: 0, endFrame: 9});
+        this.load.spritesheet('moneyExplosion', './assets/moneyExplosion.png', 
+        {frameWidth: 128, frameHeight:64, startFrame: 0, endFrame: 21});
 
         //Loads audio
-        this.load.audio('sfx_select', './assets/blip_select12.wav');
-        this.load.audio('sfx_explosion', './assets/explosion38.wav');
-        this.load.audio('sfx_rocket', './assets/rocket_shot.wav');
+        this.load.audio('cashregister', './assets/cashregister.mp3');
+        this.load.audio('bell', './assets/bell.wav');
+        this.load.audio('scribble', './assets/scribble.wav');
+        this.load.audio('sizzle', './assets/sizzle.wav');
+
+
     }
 
     //Function thats called when the scene is loaded
@@ -43,12 +54,18 @@ class Play extends Phaser.Scene {
         //Spaceships
         /////////////////////////////////////////////////////////////////////////////////////////////
         //add spaceships
-        this.ship01 = new Spaceship(this, game.config.width + 192, 132,
-            'spaceship', 0, 30).setOrigin(0,0);
-        this.ship02 = new Spaceship(this, game.config.width + 96, 196,
-            'spaceship', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, 260,
-            'spaceship', 0, 10).setOrigin(0,0);
+        this.reciept3 = new Spaceship(this, game.config.width + 300, 20,
+            'rec3', 0, 30).setOrigin(0,0);
+        this.reciept2 = new Spaceship(this, game.config.width + 150, 80,
+            'rec2', 0, 20).setOrigin(0,0);
+        this.reciept1 = new Spaceship(this, game.config.width, 140, 
+            'rec1', 0, 10).setOrigin(0,0);
+        this.pans3 = new Spaceship(this, game.config.width + 300, 450,
+            'pan3', 0, 30).setOrigin(0,0);
+        this.pans2 = new Spaceship(this, game.config.width + 150, 510,
+            'pan2', 0, 20).setOrigin(0,0);
+        this.pans1 = new Spaceship(this, game.config.width, 570, 
+            'pan1', 0, 10).setOrigin(0,0);
        
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Player Movement
@@ -65,9 +82,9 @@ class Play extends Phaser.Scene {
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         //Creates player 1 rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, 320, `rocket`, keyLEFT, keyRIGHT, keyUP)
+        this.p1Rocket = new Rocket(this, game.config.width/2, 320, `pen`, keyLEFT, keyRIGHT, keyUP)
         .setScale(0.5, 0.5).setOrigin(0.0);
-        this.p2Rocket = new Rocket(this, game.config.width/2, 750, `rocket`, keyA, keyD, keyW)
+        this.p2Rocket = new Rocket(this, game.config.width/2, 750, `bacon`, keyA, keyD, keyW)
         .setScale(0.5, 0.5).setOrigin(0.0);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,14 +92,18 @@ class Play extends Phaser.Scene {
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Holds the score
         this.p1Score = 0;
+        this.p2Score = 0;
+        this.totalScore = 0;
+        this.p1OrderCount = 0;
+        this.p2OrderCount = 0;
 
         //Displays the score
         let scoreConfig = {
             fontFamily: 'Courier',
-            fontSize: '28px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
-            align: 'right',
+            fontSize: '20px',
+            //backgroundColor: '#F3B141',
+            color: '#ffffff',
+            align: 'left',
             padding: {
                 top: 5,
                 bottom: 5,
@@ -90,7 +111,18 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
-        this.scoreLeft = this.add.text(0, game.config.height / 2, this.p1Score, scoreConfig);
+        this.p1text = this.add.text(100, 360, 'P1', scoreConfig);
+        this.p2text = this.add.text(350, 360, 'P2', scoreConfig);
+        this.totaltext = this.add.text(550, 360, 'Total', scoreConfig);
+        this.moneytext = this.add.text(10, 410, 'Orders', scoreConfig);
+        this.ordertext = this.add.text(10, 390, 'Money', scoreConfig);
+
+        
+        this.p1Orders = this.add.text(100, 410, this.p1OrderCount, scoreConfig);
+        this.p1Money = this.add.text(100, 390, this.p1Score, scoreConfig);
+        this.p2Orders = this.add.text(350, 410, this.p2OrderCount, scoreConfig);
+        this.p2Money = this.add.text(350, 390, this.p2Score, scoreConfig);
+        this.totalDisplay = this.add.text(550, 390, this.totalScore, scoreConfig);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Animation
@@ -98,10 +130,10 @@ class Play extends Phaser.Scene {
 
         //Creates the explode animation
         this.anims.create({
-            key: 'explode',
-            frames: this.anims.generateFrameNumbers('explosion',
-            {start:0, end:9, first: 0}),
-            frameRate: 30
+            key: 'moneyExplode',
+            frames: this.anims.generateFrameNumbers('moneyExplosion',
+            {start:0, end:21, first: 0}),
+            frameRate: 45
         });
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,8 +149,8 @@ class Play extends Phaser.Scene {
         //Creates a clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(60000, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, '(F)ire to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 - 64, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'UP to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
 
@@ -127,11 +159,11 @@ class Play extends Phaser.Scene {
     //Function that runs every frame
     update(){
         /////////////////////////////////////////////////////////////////////////////////////////////
-        //Player Movement
+        //Background Movement
         /////////////////////////////////////////////////////////////////////////////////////////////
-        this.peopleFar.tilePositionX -= 2;
-        this.peopleMed.tilePositionX += 5;
-        this.peopleClose.tilePositionX -= 10;
+        this.peopleFar.tilePositionX -= 1;
+        this.peopleMed.tilePositionX += 2;
+        this.peopleClose.tilePositionX -= 3;
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,47 +184,53 @@ class Play extends Phaser.Scene {
             this.p2Rocket.update();
 
             //Updates spaceships
-            this.ship01.update();
-            this.ship02.update();
-            this.ship03.update();
+            this.reciept1.update();
+            this.reciept2.update();
+            this.reciept3.update();
+            this.pans1.update();
+            this.pans2.update();
+            this.pans3.update();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         //Collisions
         /////////////////////////////////////////////////////////////////////////////////////////////
         //P1 Ship Collisions
-        if(this.checkCollision(this.p1Rocket, this.ship03)){
+        if(this.checkCollision(this.p1Rocket, this.reciept3)){
             this.p1Rocket.reset();
-            this.shipExplode(this.ship03);
+            this.shipExplode(this.reciept3, 1, 'scribble');
             console.log("Kaboom! Ship 3!");
         }
-        if(this.checkCollision(this.p1Rocket, this.ship02)){
+        if(this.checkCollision(this.p1Rocket, this.reciept2)){
             this.p1Rocket.reset();
-            this.shipExplode(this.ship02);
+            this.shipExplode(this.reciept2, 1, 'scribble');
             console.log("Kaboom! Ship 2!");
         }
-        if(this.checkCollision(this.p1Rocket, this.ship01)){
+        if(this.checkCollision(this.p1Rocket, this.reciept1)){
             this.p1Rocket.reset();
-            this.shipExplode(this.ship01);
+            this.shipExplode(this.reciept1, 1, 'scribble');
             console.log("Kaboom! Ship 1!");
         }
 
         //P2 Ship Collisions
-        if(this.checkCollision(this.p2Rocket, this.ship03)){
+        if(this.checkCollision(this.p2Rocket, this.pans3)){
             this.p2Rocket.reset();
-            this.shipExplode(this.ship03);
+            this.shipExplode(this.pans3, 2, 'sizzle');
             console.log("Kaboom! Ship 3!");
         }
-        if(this.checkCollision(this.p2Rocket, this.ship02)){
+        if(this.checkCollision(this.p2Rocket, this.pans2)){
             this.p2Rocket.reset();
-            this.shipExplode(this.ship02);
+            this.shipExplode(this.pans2, 2, 'sizzle');
             console.log("Kaboom! Ship 2!");
         }
-        if(this.checkCollision(this.p2Rocket, this.ship01)){
+        if(this.checkCollision(this.p2Rocket, this.pans1)){
             this.p2Rocket.reset();
-            this.shipExplode(this.ship01);
+            this.shipExplode(this.pans1, 2, 'sizzle');
             console.log("Kaboom! Ship 1!");
         }
+
+        //Score stuff
+        this.calcTotal();
 
     }
 
@@ -212,13 +250,13 @@ class Play extends Phaser.Scene {
     }
 
     //Ship Explode
-    shipExplode(ship){
+    shipExplode(ship, playerNum, soundFX){
         //plays a sound
-        this.sound.play('sfx_explosion');
+        this.sound.play(soundFX);
         //Hides the ship
         ship.alpha = 0
-        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
-        boom.anims.play('explode');
+        let boom = this.add.sprite(ship.x, ship.y, 'moneyExplosion').setOrigin(0,0);
+        boom.anims.play('moneyExplode');
         boom.on('animationcomplete', () => {
             ship.reset();
             ship.alpha = 1;
@@ -226,8 +264,37 @@ class Play extends Phaser.Scene {
         });
 
         //Increments score
-        this.p1Score += ship.points;
-        this.scoreLeft.text = this.p1Score;
+        if(playerNum == 1){
+            this.p1Score += ship.points;
+            this.p1OrderCount += 1;
+            this.p1Money.text = this.p1Score;
+            this.p1Orders.text = this.p1OrderCount;
+        } else if (playerNum == 2){
+            this.p2Score += ship.points;
+            this.p2OrderCount += 1;
+            this.p2Money.text = this.p2Score;
+            this.p2Orders.text = this.p2OrderCount;
+        }
     }
+
+    //Calculate Total
+    calcTotal(){
+        if(this.p1OrderCount == this.p2OrderCount){
+            this.totalScore = this.p1Score + this.p2Score;
+        }
+        if(this.p1OrderCount > this.p2OrderCount){
+            this.totalScore = this.p2Score + this.p1Score;
+            var difference = this.p1Score - this.p2Score;
+            this.totalScore = this.totalScore - difference;
+        } else if (this.p1OrderCount < this.p2OrderCount){
+            this.totalScore = this.p1Score + this.p2Score;
+            var difference = this.p2Score - this.p1Score;
+            this.totalScore = this.totalScore - difference;
+            }
+        
+        this.totalDisplay.text = this.totalScore;
+    }
+
+    
 
 }

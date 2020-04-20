@@ -5,19 +5,26 @@ class Menu extends Phaser.Scene {
 
     preload(){
         //Loads audio
-        this.load.audio('sfx_select', './assets/blip_select12.wav');
-        this.load.audio('sfx_explosion', './assets/explosion38.wav');
-        this.load.audio('sfx_rocket', './assets/rocket_shot.wav');
+        this.load.image('menuBG', './assets/baconPatrolMenu.png');
+        this.load.audio('bell', './assets/bell.wav');
+        this.load.audio('cashregister', './assets/cashregister.mp3');
+        this.load.audio('ska', './assets/blueSka.mp3');
     }
 
     create(){
+
+        music = this.sound.add('ska');
+        if(!music.isPlaying)
+            music.play();
         console.log(this);
         //this.add.text(20,20, "AAAAAAAAAAAA MENU");
     
         //launches the next scene
         //this.scene.start("playScene");
         //pls play?? NO START!! ONLY PLAY
+        this.bg1 = this.add.tileSprite(0, 0, 640, 900, 'menuBG').setOrigin(0,0);
 
+        /** 
         //Displays the score
         let menuConfig = {
             fontFamily: 'Courier',
@@ -42,6 +49,7 @@ class Menu extends Phaser.Scene {
         menuConfig.backgroundColor = '#00FF00';
         menuConfig.color = '#000';
         this.add.text(centerX, centerY + textSpacer, 'Press ← for Easy or → for Hard', menuConfig).setOrigin(0.5);
+        **/
 
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -49,21 +57,22 @@ class Menu extends Phaser.Scene {
     }
 
     update(){
+        music.setLoop(true);
         //Easy
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             game.settings = {
-                spaceshipSpeed: 3,
+                spaceshipSpeed: 4,
                 gameTimer: 60000,
             }
-            this.sound.play('sfx_select');
+            this.sound.play('cashregister');
             this.scene.start("playScene");
         }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
             game.settings = {
-                spaceshipSpeed: 4,
-                gameTimer: 45000,
+                spaceshipSpeed: 5,
+                gameTimer: 450000,
             }
-            this.sound.play('sfx_select');
+            this.sound.play('cashregister');
             this.scene.start("playScene");
         }
     }
